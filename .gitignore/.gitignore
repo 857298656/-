@@ -1,0 +1,22 @@
+import requests
+import json
+import pprint
+import random
+
+r = requests.get('https://api.bilibili.com/x/v2/reply?&jsonp=jsonp&pn=1&type=1&oid=17879644&sort=0&_=1555307458444')
+data = json.loads(r.text)
+user_map = {}
+total_pages = data['data']['page']['count']//20+1
+for page in range(1, total_pages+1):
+    r = requests.get('https://api.bilibili.com/x/v2/reply?&jsonp=jsonp&pn={}&type=1&oid=17879644&sort=0&_=1555307458444'.format(page))
+    data = json.loads(r.text)
+    for i in data['data']['replies']:
+        # pprint.pprint(i['replies'])
+        user_map[i['member']['mid']] = i['member']['uname']
+        if i['replies'] != None:
+            for j in i['replies']:
+                # pprint.pprint(j['member'])
+                user_map[j['member']['mid']] = j['member']['uname']
+
+id = random.choice(list(user_map))
+print('幸运观众id:{}, 昵称:{}'.format(id,user_map[id]))
